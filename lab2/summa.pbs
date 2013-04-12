@@ -1,0 +1,18 @@
+#PBS -q class
+#PBS -l nodes=4
+#PBS -l walltime=00:02:30
+#PBS -N summa
+
+export OMPI_MCA_mpi_yield_when_idle=0
+cd $PBS_O_WORKDIR
+
+
+date
+hostname
+echo $PWD
+cat $PBS_NODEFILE
+echo -e "\n\n"
+
+mpirun --hostfile $PBS_NODEFILE -np 4 ./summa 4 4 
+
+# eof
