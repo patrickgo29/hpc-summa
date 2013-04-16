@@ -44,7 +44,7 @@ mat_multiply (int m, int n, int k,
   assert (A || m <= 0 || k <= 0); assert (lda >= m);
   assert (B || k <= 0 || n <= 0); assert (ldb >= k);
   assert (C || m <= 0 || n <= 0); assert (ldc >= m);
-  #pragma omp parallel for
+  #pragma omp parallel for num_threads(m)
   {
 	  for (int ii = 0; ii < m; ++ii) {
 		  for (int jj = 0; jj < n; ++jj) {
