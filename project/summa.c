@@ -245,7 +245,7 @@ summa_mult (int m, int n, int k, int s_max,
 
     /* Step 3: Local multiply */
     t_start = MPI_Wtime (); /* For timing computation */
-    mat_multiply (m_local, n_local, s,
+    mat_multiply_omp (m_local, n_local, s,
 		  A_strip, m_local, B_strip, s,
 		  C_local, m_local);
     t_comp += MPI_Wtime () - t_start;
