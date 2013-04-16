@@ -76,31 +76,28 @@ void mat_mult_thr(int m, int n, int k,
 	part_rows = m/nthr;
 	
 	omp_set_num_threads(nthr); //set the number of threads
-#pragma omp parallel shared(A,B,C,part_rows) private(th_id)
+	#pragma omp parallel shared(A,B,C,part_rows) private(th_id)
 	{
 		th_id = omp_get_thread_num(); //th_id holds the thread number for each thread
 		
 		//Split the first for loop among the threads
-#pragma omp for schedule(guided,part_rows)
+		#pragma omp for schedule(guided,part_rows)
 		for (int ii = 0; ii < m; ++ii) { //iterate through the rows of the result
-			{
 				printf("Thread #%d is doing row %d.\n",th_id,ii); //Uncomment this line to see which thread is doing each row
 				for (int jj = 0; jj < n; ++jj) { //iterate through the columns of the result
-					{
 						double cij = C[ii + jj*ldc]; //initialize
-						
 						//iterate through the inner dimension (columns of first matrix/rows of second matrix)
 						for (int kk = 0; kk < k; ++kk) {
 							double tij = A[ii + kk*lda] * B[kk + jj*ldb];
 							cij += tij;
 						}
 						C[ii + jj*ldc] = cij;
-					}
 				}
-			}
 		}
+	}
+}
 		
-		/* ------------------------------------------------------------ */
+/* ------------------------------------------------------------ */
 
 void
 mat_multiplyErrorbound (int m, int n, int k,
