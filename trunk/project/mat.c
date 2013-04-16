@@ -84,7 +84,7 @@ void mat_mult_thr(int m, int n, int k,
 #pragma omp for schedule(guided,part_rows)
 		for (int ii = 0; ii < m; ++ii) { //iterate through the rows of the result
 			{
-				printf("Thread #%d is doing row %d.\n",th_id,i); //Uncomment this line to see which thread is doing each row
+				printf("Thread #%d is doing row %d.\n",th_id,ii); //Uncomment this line to see which thread is doing each row
 				for (int jj = 0; jj < n; ++jj) { //iterate through the columns of the result
 					{
 						double cij = C[ii + jj*ldc]; //initialize
