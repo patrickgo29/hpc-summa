@@ -48,6 +48,7 @@ mat_multiply (int m, int n, int k,
     for (int jj = 0; jj < n; ++jj) {
       double cij = C[ii + jj*ldc];
       for (int kk = 0; kk < k; ++kk) {
+		  printf("Thread %d\n",omp_get_thread_num());
 		  double tij = A[ii + kk*lda] * B[kk + jj*ldb];
 		  cij += tij;
       }
