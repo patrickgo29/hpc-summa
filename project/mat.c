@@ -45,16 +45,18 @@ mat_multiply (int m, int n, int k,
   assert (B || k <= 0 || n <= 0); assert (ldb >= k);
   assert (C || m <= 0 || n <= 0); assert (ldc >= m);
   #pragma omp parallel for
-  for (int ii = 0; ii < m; ++ii) {
-    for (int jj = 0; jj < n; ++jj) {
-      double cij = C[ii + jj*ldc];
-      for (int kk = 0; kk < k; ++kk) {
-		  printf("Thread %d\n",omp_get_thread_num());
-		  double tij = A[ii + kk*lda] * B[kk + jj*ldb];
-		  cij += tij;
-      }
-      C[ii + jj*ldc] = cij;
-    }
+  {
+	  for (int ii = 0; ii < m; ++ii) {
+		  for (int jj = 0; jj < n; ++jj) {
+			  double cij = C[ii + jj*ldc];
+			  for (int kk = 0; kk < k; ++kk) {
+				  printf("Thread %d ",omp_get_thread_num());
+				  double tij = A[ii + kk*lda] * B[kk + jj*ldb];
+				  cij += tij;
+			  }
+			  C[ii + jj*ldc] = cij;
+		  }
+	  }
   }
 }
 #endif
