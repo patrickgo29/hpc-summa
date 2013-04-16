@@ -40,6 +40,10 @@ void mat_multiply (int m, int n, int k,
 		   const double* A, int lda, const double* B, int ldb,
 		   double* C, int ldc);
 
+void mat_mult_thr (int m, int n, int k,
+				   const double* A, int lda, const double* B, int ldb,
+				   double* C, int ldc);
+
 
 /** \brief Same as mat_multiply, but with a computed error bound. */
 void mat_multiplyErrorbound (int m, int n, int k,
