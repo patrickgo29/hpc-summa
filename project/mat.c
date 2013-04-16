@@ -47,6 +47,7 @@ mat_multiply (int m, int n, int k,
   omp_set_num_threads(4);	
   #pragma omp parallel for 
   {
+	  printf("Nthreads %d",omp_get_num_threads();
 	  for (int ii = 0; ii < m; ++ii) {
 		  for (int jj = 0; jj < n; ++jj) {
 			  double cij = C[ii + jj*ldc];
