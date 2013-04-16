@@ -44,7 +44,9 @@ mat_multiply (int m, int n, int k,
   assert (A || m <= 0 || k <= 0); assert (lda >= m);
   assert (B || k <= 0 || n <= 0); assert (ldb >= k);
   assert (C || m <= 0 || n <= 0); assert (ldc >= m);
-  #pragma omp parallel for shared(A,B,C) private(jj,kk)
+  int nthreads = 4;
+  omp_set_num_threads(nthreads);
+  #pragma omp parallel for private(ii,jj,kk,cij,tij,A,BC)
   {
 	  for (int ii = 0; ii < m; ++ii) {
 		  for (int jj = 0; jj < n; ++jj) {
@@ -60,42 +62,6 @@ mat_multiply (int m, int n, int k,
   }
 }
 #endif
-
-/* ------------------------------------------------------------ */
-
-void mat_mult_thr(int m, int n, int k,
-				  const double* A, int lda, const double* B, int ldb,
-				  double* C, int ldc)
-{
-	assert (A || m <= 0 || k <= 0); assert (lda >= m);
-	assert (B || k <= 0 || n <= 0); assert (ldb >= k);
-	assert (C || m <= 0 || n <= 0); assert (ldc >= m);
-	
-	int nthr = 4;
-	int part_rows, th_id;
-	part_rows = m/nthr;
-	
-	#pragma omp parallel shared(A,B,C,part_rows) private(th_id)
-	{
-		omp_set_dynamic(0);
-		omp_set_num_threads(nthr); //set the number of threads
-		th_id = omp_get_thread_num(); //th_id holds the thread number for each thread
-		
-		//Split the first for loop among the threads
-		#pragma omp for schedule(guided,part_rows)
-		for (int ii = 0; ii < m; ++ii) { 
-				printf("Thread #%d is doing row %d.\n",th_id,ii); 
-				for (int jj = 0; jj < n; ++jj) { 
-						double cij = C[ii + jj*ldc]; //initialize
-						for (int kk = 0; kk < k; ++kk) {
-							double tij = A[ii + kk*lda] * B[kk + jj*ldb];
-							cij += tij;
-						}
-						C[ii + jj*ldc] = cij;
-				}
-		}
-	}
-}
 		
 /* ------------------------------------------------------------ */
 
