@@ -44,7 +44,7 @@ mat_multiply (int m, int n, int k,
   assert (A || m <= 0 || k <= 0); assert (lda >= m);
   assert (B || k <= 0 || n <= 0); assert (ldb >= k);
   assert (C || m <= 0 || n <= 0); assert (ldc >= m);
-  #pragma omp parallel for 
+  #pragma omp parallel for shared(A,B,C) private(jj,kk)
   {
 	  for (int ii = 0; ii < m; ++ii) {
 		  for (int jj = 0; jj < n; ++jj) {
@@ -82,11 +82,10 @@ void mat_mult_thr(int m, int n, int k,
 		
 		//Split the first for loop among the threads
 		#pragma omp for schedule(guided,part_rows)
-		for (int ii = 0; ii < m; ++ii) { //iterate through the rows of the result
-				printf("Thread #%d is doing row %d.\n",th_id,ii); //Uncomment this line to see which thread is doing each row
-				for (int jj = 0; jj < n; ++jj) { //iterate through the columns of the result
+		for (int ii = 0; ii < m; ++ii) { 
+				printf("Thread #%d is doing row %d.\n",th_id,ii); 
+				for (int jj = 0; jj < n; ++jj) { 
 						double cij = C[ii + jj*ldc]; //initialize
-						//iterate through the inner dimension (columns of first matrix/rows of second matrix)
 						for (int kk = 0; kk < k; ++kk) {
 							double tij = A[ii + kk*lda] * B[kk + jj*ldb];
 							cij += tij;
