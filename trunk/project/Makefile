@@ -31,7 +31,7 @@ TARGETS = mm1d$(EXEEXT) summa$(EXEEXT)
 CLEANFILES =
 DISTFILES = Makefile
 
-HDRS_COMMON = util.h mat.h mpi_helper.h
+HDRS_COMMON = util.h mat.h mpi_helper.h omp.h
 SRCS_COMMON = $(HDRS_COMMON:.h=.c)
 OBJS_COMMON = $(SRCS_COMMON:.c=.o)
 DISTFILES += $(HDRS_COMMON) $(SRCS_COMMON)
