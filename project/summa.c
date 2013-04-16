@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+#include <omp.h>
 #include "mpi_helper.h"
 #include "mat.h"
 #include "mm1d.h"
