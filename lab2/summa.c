@@ -216,9 +216,12 @@ summa_mult (int m, int n, int k, int s_max,
   while (iter_k < k) {
     int k_start_A = mm1d_getBlockStart (k, P_col, owner_A);
     int k_local_A = mm1d_getBlockLength (k, P_col, owner_A);
-
     int k_start_B = mm1d_getBlockStart (k, P_row, owner_B);
     int k_local_B = mm1d_getBlockLength (k, P_row, owner_B);
+
+    /* Invariants expressing owner/iter_k relationships */
+    mpih_assert ((k_start_A <= iter_k) && (iter_k < k_start_A + k_local_A));
+    mpih_assert ((k_start_B <= iter_k) && (iter_k < k_start_B + k_local_B));
 
     /* Determine a strip width, s, that still resides in both the
        current A and B blocks. */
@@ -227,9 +230,17 @@ summa_mult (int m, int n, int k, int s_max,
 
     double t_start = MPI_Wtime (); /* For timing communication */
     /* Step 1: Broadcast m_local x s strip of A */
-    /* === @@ YOUR CODE GOES HERE @@ === */
+    if (rank_col == owner_A)
+      memcpy (A_strip, A_local + (iter_k - k_start_A)*m_local,
+	      m_local * s * sizeof (double));
+    MPI_Bcast (A_strip, m_local * s, MPI_DOUBLE, owner_A, comm_row);
+
     /* Step 2: Broadcast s x n_local strip of B */
-    /* === @@ YOUR CODE GOES HERE @@ === */
+    if (rank_row == owner_B)
+      mat_copyBlock (s, n_local,
+		     B_local + iter_k - k_start_B, k_local_B,
+		     B_strip, s);
+    MPI_Bcast (B_strip, s * n_local, MPI_DOUBLE, owner_B, comm_col);
     t_comm += MPI_Wtime () - t_start;
 
     /* Step 3: Local multiply */
@@ -313,23 +324,16 @@ summa_dump (const char* tag, int m, int n, const double* A_local, MPI_Comm comm2
       MPI_Barrier (comm2d); /* Serialize output */
       if (r_row == rank_row && r_col == rank_col) {
 	fflush (stderr);
-	mpih_debugmsg (comm2d, "(p%d,p%d)>> Mat:%s -- %d x %d; j \\in [%d,%d]\n",
+	mpih_debugmsg (comm2d, "(p%d,p%d)>> Matrix: %s -- %d x %d; j \\in [%d,%d]\n",
 		       rank_row, rank_col, tag, m_local, n_local,
 		       j0, j0+n_local-1);
-
-	/* Maximum no. of rows/columns to print */
-	const int MAX_ROWS = 4;
-	const int MAX_COLS = 4;
-
-	for (int di = 0; di < min_int (m_local, MAX_ROWS); ++di) {
+	for (int di = 0; di < m_local; ++di) {
 	  fprintf (stderr, "   Row %d:", i0+di);
-	  for (int dj = 0; dj < min_int (n_local, MAX_COLS); ++dj) {
+	  for (int dj = 0; dj < n_local; ++dj) {
 	    fprintf (stderr, " %g", A_local[di + dj*m_local]);
 	  } /* dj */
-	  if (n_local > MAX_COLS) fprintf (stderr, " ... (omitted)");
 	  fprintf (stderr, "\n");
 	} /* di */
-	if (m_local > MAX_ROWS) fprintf (stderr, "   ... (rows omitted) ...\n");
       } /* (r_row, r_col) == (rank_row, rank_col) */
     } /* r_col */
   } /* r_row */
