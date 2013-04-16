@@ -20,7 +20,7 @@ ifeq ($(HOST),daffy2)
 else ifeq ($(HOST),jinx-login.cc.gatech.edu)
 #  MPICFLAGS += -DUSE_MKL
   MKLDIR = /opt/intel/Compiler/11.1/059/mkl/lib/em64t
-  MPILDFLAGS += -L$(MKLDIR) -Wl,-rpath -Wl,$(MKLDIR) -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -openmp
+  MPILDFLAGS += -L$(MKLDIR) -Wl,-rpath -Wl,$(MKLDIR) -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -fopenmp
 endif
 
 EXEEXT =
