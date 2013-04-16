@@ -75,6 +75,7 @@ void mat_mult_thr(int m, int n, int k,
 	int part_rows, th_id;
 	part_rows = m/nthr;
 	
+	omp_set_dynamic(0);
 	omp_set_num_threads(nthr); //set the number of threads
 	#pragma omp parallel shared(A,B,C,part_rows) private(th_id)
 	{
