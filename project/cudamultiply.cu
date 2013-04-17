@@ -10,7 +10,7 @@ __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd)
        v += ad[row+ind*m]*bd[ind+col*k];
     }
 
-   cd[row+m*col] += Ctemp;
+   cd[row+m*col] += Ctemp + cd[row+m*col];
    __syncthreads();
 }
 
@@ -34,8 +34,9 @@ void matrix_multiply_cuda(int m, int n, int k,
     cudaMemcpy(bd, B, k * n * sizeof(float), cudaMemcpyHostToDevice);
 	cudaMemcpy(cd, C, m * n * sizeof(float), cudaMemcpyHostToDevice);
 
-    dim3 block(32, 32);           
-    dim3 grid((n+31)/32, (m+31)/32);
+	// What dimension?
+    dim3 block(?, ?);           
+    dim3 grid(?, ?);
     
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd);
 
