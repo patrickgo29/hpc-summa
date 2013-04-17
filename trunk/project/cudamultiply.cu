@@ -1,4 +1,5 @@
 #include "cudamultiply.h"
+#include <assert.h>
 #define THREADS_PER_BLOCK 10
 
 __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd) {
@@ -51,7 +52,7 @@ void matrix_multiply_cuda(int m, int n, int k,
     
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd);
 
-    cudaMemcpy(c, cd, m * n * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(C, cd, m * n * sizeof(float), cudaMemcpyDeviceToHost);
     
     cudaFree(ad);
     cudaFree(bd);
