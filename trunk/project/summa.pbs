@@ -1,5 +1,5 @@
 #PBS -q class
-#PBS -l nodes=4
+#PBS -l nodes=4:gpu
 #PBS -l walltime=00:02:30
 #PBS -N summa
 
@@ -13,6 +13,6 @@ echo $PWD
 cat $PBS_NODEFILE
 echo -e "\n\n"
 
-mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 100 100 100 4 2 10
+mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 10 10 10 2 2 4
 
 # eof
