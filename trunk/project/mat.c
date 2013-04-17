@@ -71,7 +71,7 @@ mat_multiply_omp (int m, int n, int k,
 	omp_set_num_threads(nthreads);
 	int ii,jj,kk;
 	double cij,tij;
-	#pragma omp parallel for private(ii,jj,kk,cij,tij,A,B,C)
+	#pragma omp parallel for private(ii,jj,kk,cij,tij)
 	for (ii = 0; ii < m; ++ii) {
 		for (jj = 0; jj < n; ++jj) {
 			cij = C[ii + jj*ldc];
