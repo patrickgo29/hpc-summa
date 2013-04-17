@@ -13,6 +13,6 @@ echo $PWD
 cat $PBS_NODEFILE
 echo -e "\n\n"
 
-mpirun --hostfile $PBS_NODEFILE -np 4 ./summa 10 10 10 2 2 4
+mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 100 100 100 4 2 10
 
 # eof
