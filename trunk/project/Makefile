@@ -86,7 +86,7 @@ summa--soln$(EXEEXT): $(OBJS_SUMMA_SOLN) $(OBJS_COMMON)
 	
 # ============================================================
 
-%.o: %.cu $(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $<
+%.o: %.cu $(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $^
 
 #------------------------------------------------------------
 check-mpicc:
