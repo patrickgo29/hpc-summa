@@ -10,9 +10,12 @@
 #include "mat.h"
 #include "mm1d.h"
 #include "summa.h"
-#include "cudamultiply.h"
 
 #define MSGTAG_SUMMA_DIST 101
+
+extern void void mat_multiply_cuda(int m, int n, int k,
+								   const double* A, int lda, const double* B, int ldb,
+								   double* C, int ldc);
 
 /* ------------------------------------------------------------ */
 
