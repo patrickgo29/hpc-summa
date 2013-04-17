@@ -67,8 +67,6 @@ mat_multiply_omp (int m, int n, int k,
 	assert (A || m <= 0 || k <= 0); assert (lda >= m);
 	assert (B || k <= 0 || n <= 0); assert (ldb >= k);
 	assert (C || m <= 0 || n <= 0); assert (ldc >= m);
-	int nthreads = 4;
-	omp_set_num_threads(nthreads);
 	int ii,jj,kk;
 	double cij,tij;
 	#pragma omp parallel for private(ii,jj,kk,cij,tij)
