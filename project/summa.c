@@ -13,7 +13,7 @@
 
 #define MSGTAG_SUMMA_DIST 101
 
-extern void void mat_multiply_cuda(int m, int n, int k,
+extern void mat_multiply_cuda(int m, int n, int k,
 								   const double* A, int lda, const double* B, int ldb,
 								   double* C, int ldc);
 
