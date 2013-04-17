@@ -80,13 +80,14 @@ OBJS_SUMMA_SOLN = $(SRCS_SUMMA_SOLN:.c=.o)
 summa--soln$(EXEEXT): $(OBJS_SUMMA_SOLN) $(OBJS_COMMON)
 	$(MPICC) $(MPICOPTFLAGS) -o $@ $^ $(MPILDFLAGS)
 
+# ============================================================
+
+%.o: %.cu 
+	$(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $<
+	
 #------------------------------------------------------------
 %.o: %.c
 	$(MPICC) $(MPICFLAGS) $(MPICOPTFLAGS) -o $@ -c $^
-	
-# ============================================================
-
-%.o: %.cu cudamultiply.cu $(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $^
 
 #------------------------------------------------------------
 check-mpicc:
