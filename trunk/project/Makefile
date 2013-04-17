@@ -1,5 +1,12 @@
 PROJID = lab2
 
+CC = gcc44
+CXX = g++44
+CFLAGS = -std=gnu99
+COPTFLAGS = -O2 -g
+COMPFLAGS = -fopenmp
+LDFLAGS =
+
 # Try to find an MPICC compiler
 ifeq ($(MPICC),)
   MPICC = $(shell which mpicc)
@@ -8,9 +15,17 @@ ifeq ($(MPICC),)
   MPICC = $(shell which openmpicc)
 endif
 
-MPICFLAGS = -std=gnu99 -fopenmp
-MPICOPTFLAGS = -O2 -g -fopenmp
-MPILDFLAGS = -fopenmp
+MPICC = mpicc
+MPICFLAGS = $(CFLAGS)
+MPICOPTFLAGS = $(COPTFLAGS) $(COMPFLAGS)
+MPILDFLAGS =
+
+CUDAROOT = /opt/cuda-4.2/cuda
+NVCC = nvcc
+NVCFLAGS = --compiler-bindir=$(CC)
+NVCOPTFLAGS = $(COPTFLAGS)
+NVLDFLAGS =
+CUBLAS_LDFLAGS = -L$(CUDAROOT)/lib64 -Wl,-rpath $(CUDAROOT)/lib64 -lcudart -lcublas
 
 HOST := $(shell hostname -f)
 ifeq ($(HOST),daffy2)
@@ -65,6 +80,11 @@ OBJS_SUMMA_SOLN = $(SRCS_SUMMA_SOLN:.c=.o)
 
 summa--soln$(EXEEXT): $(OBJS_SUMMA_SOLN) $(OBJS_COMMON)
 	$(MPICC) $(MPICOPTFLAGS) -o $@ $^ $(MPILDFLAGS)
+
+# ============================================================
+
+%.o: %.cu $(COMMON_DEPS)
+	$(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $<
 
 #------------------------------------------------------------
 %.o: %.c
