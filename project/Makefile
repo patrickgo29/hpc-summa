@@ -1,12 +1,5 @@
 PROJID = lab2
 
-CC = gcc44
-CXX = g++44
-CFLAGS = -std=gnu99
-COPTFLAGS = -O2 -g
-COMPFLAGS = -fopenmp
-LDFLAGS =
-
 # Try to find an MPICC compiler
 ifeq ($(MPICC),)
   MPICC = $(shell which mpicc)
@@ -15,9 +8,12 @@ ifeq ($(MPICC),)
   MPICC = $(shell which openmpicc)
 endif
 
-MPICFLAGS = $(CFLAGS)
-MPICOPTFLAGS = $(COPTFLAGS) $(COMPFLAGS)
-MPILDFLAGS =
+CC = gcc44
+CXX = g++44
+CFLAGS = -std=gnu99
+COPTFLAGS = -O2 -g
+COMPFLAGS = -fopenmp
+LDFLAGS =
 
 CUDAROOT = /opt/cuda-4.2/cuda
 NVCC = nvcc
@@ -25,6 +21,10 @@ NVCFLAGS = --compiler-bindir=$(CC)
 NVCOPTFLAGS = $(COPTFLAGS)
 NVLDFLAGS =
 CUBLAS_LDFLAGS = -L$(CUDAROOT)/lib64 -Wl,-rpath $(CUDAROOT)/lib64 -lcudart -lcublas
+
+MPICFLAGS = -std=gnu99 -fopenmp
+MPICOPTFLAGS = -O2 -g -fopenmp
+MPILDFLAGS = -fopenmp
 
 HOST := $(shell hostname -f)
 ifeq ($(HOST),daffy2)
@@ -70,7 +70,7 @@ OBJS_SUMMA = $(SRCS_SUMMA:.c=.o) cudamultiply.o
 DISTFILES += $(HDRS_SUMMA) $(SRCS_SUMMA)
 
 summa$(EXEEXT): $(OBJS_SUMMA) $(OBJS_COMMON)
-	$(MPICC) $(MPICOPTFLAGS) -o $@ $^ $(MPILDFLAGS)
+	$(MPICC) $(MPICOPTFLAGS) -o $@ $^ $(MPILDFLAGS) $(CUBLAS_LDFLAGS)
 
 #------------------------------------------------------------
 HDRS_SUMMA_SOLN = mm1d.h summa.h
@@ -80,14 +80,13 @@ OBJS_SUMMA_SOLN = $(SRCS_SUMMA_SOLN:.c=.o)
 summa--soln$(EXEEXT): $(OBJS_SUMMA_SOLN) $(OBJS_COMMON)
 	$(MPICC) $(MPICOPTFLAGS) -o $@ $^ $(MPILDFLAGS)
 
-# ============================================================
-
-%.o: %.cu $(COMMON_DEPS)
-	$(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $<
-
 #------------------------------------------------------------
 %.o: %.c
 	$(MPICC) $(MPICFLAGS) $(MPICOPTFLAGS) -o $@ -c $^
+	
+# ============================================================
+
+%.o: %.cu $(NVCC) $(NVCFLAGS) $(NVCOPTFLAGS) -o $@ -c $<
 
 #------------------------------------------------------------
 check-mpicc:
