@@ -52,7 +52,7 @@ mm1d$(EXEEXT): $(OBJS_1D) $(OBJS_COMMON)
 #------------------------------------------------------------
 HDRS_SUMMA = mm1d.h summa.h
 SRCS_SUMMA = $(HDRS_SUMMA:.h=.c) driversumma.c
-OBJS_SUMMA = $(SRCS_SUMMA:.c=.o)
+OBJS_SUMMA = $(SRCS_SUMMA:.c=.o) cudamultiply.o
 DISTFILES += $(HDRS_SUMMA) $(SRCS_SUMMA)
 
 summa$(EXEEXT): $(OBJS_SUMMA) $(OBJS_COMMON)
