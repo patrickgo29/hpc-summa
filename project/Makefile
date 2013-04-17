@@ -8,9 +8,9 @@ ifeq ($(MPICC),)
   MPICC = $(shell which openmpicc)
 endif
 
-MPICFLAGS = -std=gnu99
+MPICFLAGS = -std=gnu99 -fopenmp
 MPICOPTFLAGS = -O2 -g
-MPILDFLAGS = -fopenmp
+MPILDFLAGS = 
 
 HOST := $(shell hostname -f)
 ifeq ($(HOST),daffy2)
