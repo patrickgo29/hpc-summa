@@ -25,7 +25,7 @@ __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd)
     __syncthreads();
 }
 
-void mat_multiply_cuda(int m, int n, int k,
+extern "C" void mat_multiply_cuda(int m, int n, int k,
 	      const double* A, int lda, const double* B, int ldb,
 	      double* C, int ldc) {
 		  
