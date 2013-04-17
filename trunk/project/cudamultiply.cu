@@ -1,4 +1,3 @@
-#include "cudamultiply.h"
 #include <assert.h>
 #define THREADS_PER_BLOCK 10
 
