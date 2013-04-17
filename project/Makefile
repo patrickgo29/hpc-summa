@@ -15,7 +15,6 @@ ifeq ($(MPICC),)
   MPICC = $(shell which openmpicc)
 endif
 
-MPICC = mpicc
 MPICFLAGS = $(CFLAGS)
 MPICOPTFLAGS = $(COPTFLAGS) $(COMPFLAGS)
 MPILDFLAGS =
