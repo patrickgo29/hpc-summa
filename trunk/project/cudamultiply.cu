@@ -1,7 +1,7 @@
 #include <assert.h>
-#define THREADS_PER_BLOCK 10
+#define THREADS_PER_BLOCK 4
 
-__global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd) {
+__global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd, int lda, int ldb, int ldc) {
     double v = 0.0;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -11,8 +11,8 @@ __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd)
 	int cIndex;
     for (ind = 0; ind < k; ++ind)
     {
-	   aIndex = row+ind*m;
-	   bIndex = ind+col*k;
+	   aIndex = row+ind*lda;
+	   bIndex = ind+col*ldb;
 	   if (aIndex < m*k && bIndex < k*n) {
 			v += ad[aIndex]*bd[bIndex];
 	   }
@@ -49,7 +49,7 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     dim3 block(size, size);           
     dim3 grid((n+size-1)/size, (m+size-1)/size);
     
-    kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd);
+    kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd, lda, ldb, ldc);
 
     cudaMemcpy(C, cd, m * n * sizeof(float), cudaMemcpyDeviceToHost);
     
