@@ -18,7 +18,7 @@ __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd,
 	   }
     }
 
-	cIndex = row+m*col;
+	cIndex = row+col*ldc;
 	if (cIndex < m*n) {
 		cd[cIndex] += v;
 	}
