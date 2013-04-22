@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdlib.h>
 #define THREADS_PER_BLOCK 4
 
 __global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd, int lda, int ldb, int ldc) {
