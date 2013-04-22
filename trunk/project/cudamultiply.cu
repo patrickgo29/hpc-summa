@@ -38,6 +38,10 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     double* ad;
     double* bd;
     double* cd;
+	
+	for (i=0;i<m*n;i++){
+		printf("Before %f \n",C[i]);
+	}
     
     cudaMalloc((void**)&ad, m * k * sizeof(double));
     cudaMalloc((void**)&bd, k * n * sizeof(double));
@@ -56,7 +60,7 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     cudaMemcpy(C, cd, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 	int i,j;
 	for (i=0;i<m*n;i++){
-		printf("%f \n",C[i]);
+		printf("After %f \n",C[i]);
 	}
     
     cudaFree(ad);
