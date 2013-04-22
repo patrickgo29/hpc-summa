@@ -1,8 +1,9 @@
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 #define THREADS_PER_BLOCK 4
 
-__global__ void kernelFunc(int m, int n, int k, float* ad, float* bd, float* cd, int lda, int ldb, int ldc) {
+__global__ void kernelFunc(int m, int n, int k, double* ad, double* bd, double* cd, int lda, int ldb, int ldc) {
     double v = 0.0;
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -34,17 +35,17 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
 	assert (B || k <= 0 || n <= 0); assert (ldb >= k);
 	assert (C || m <= 0 || n <= 0); assert (ldc >= m);	  
 	
-    float* ad;
-    float* bd;
-    float* cd;
+    double* ad;
+    double* bd;
+    double* cd;
     
-    cudaMalloc((void**)&ad, m * k * sizeof(float));
-    cudaMalloc((void**)&bd, k * n * sizeof(float));
-    cudaMalloc((void**)&cd, m * n * sizeof(float));
+    cudaMalloc((void**)&ad, m * k * sizeof(double));
+    cudaMalloc((void**)&bd, k * n * sizeof(double));
+    cudaMalloc((void**)&cd, m * n * sizeof(double));
     
-    cudaMemcpy(ad, A, m * k * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(bd, B, k * n * sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpy(cd, C, m * n * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(ad, A, m * k * sizeof(double), cudaMemcpyHostToDevice);
+    cudaMemcpy(bd, B, k * n * sizeof(double), cudaMemcpyHostToDevice);
+	cudaMemcpy(cd, C, m * n * sizeof(double), cudaMemcpyHostToDevice);
 
 	int size = THREADS_PER_BLOCK;
     dim3 block(size, size);           
@@ -52,7 +53,7 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd, lda, ldb, ldc);
 
-    cudaMemcpy(C, cd, m * n * sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(C, cd, m * n * sizeof(double), cudaMemcpyDeviceToHost);
 	int i,j;
 	for (i=0;i<m*n;i++){
 		printf("%f \n",C[i]);
