@@ -19,8 +19,6 @@ __global__ void kernelFunc(int m, int n, int k, double* ad, double* bd, double* 
 			v += ad[aIndex]*bd[bIndex];
 	   }
     }
-	
-	__syncthreads();
 
 	cIndex = row+col*ldc;
 	if (cIndex < m*n) {
@@ -56,6 +54,11 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd, lda, ldb, ldc);
 
     cudaMemcpy(C, cd, m * n * sizeof(double), cudaMemcpyDeviceToHost);
+	
+	int i;
+	for (i=0;i<m*n;++i){
+		printf("%f\n",C[i]);
+	}
     
     cudaFree(ad);
     cudaFree(bd);
