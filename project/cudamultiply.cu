@@ -52,6 +52,10 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd, lda, ldb, ldc);
 
     cudaMemcpy(C, cd, m * n * sizeof(float), cudaMemcpyDeviceToHost);
+	int i,j;
+	for (i=0;i<m*n;i++){
+		printf("%f \n",C[i]);
+	}
     
     cudaFree(ad);
     cudaFree(bd);
