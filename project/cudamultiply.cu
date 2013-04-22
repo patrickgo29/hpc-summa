@@ -5,8 +5,8 @@
 
 __global__ void kernelFunc(int m, int n, int k, double* ad, double* bd, double* cd, int lda, int ldb, int ldc) {
     double v = 0.0;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int col = blockIdx.y * blockDim.y + threadIdx.y;
+    int row = blockIdx.x * blockDim.x + threadIdx.x;
     int ind;
 	int aIndex;
 	int bIndex;
