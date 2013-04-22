@@ -19,6 +19,8 @@ __global__ void kernelFunc(int m, int n, int k, double* ad, double* bd, double* 
 			v += ad[aIndex]*bd[bIndex];
 	   }
     }
+	
+	__syncthreads();
 
 	cIndex = row+col*ldc;
 	if (cIndex < m*n) {
@@ -38,11 +40,6 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     double* ad;
     double* bd;
     double* cd;
-	
-	int j;
-	for (j=0;j<m*n;j++){
-		printf("Before %f \n",C[j]);
-	}
     
     cudaMalloc((void**)&ad, m * k * sizeof(double));
     cudaMalloc((void**)&bd, k * n * sizeof(double));
@@ -59,10 +56,6 @@ extern "C" void mat_multiply_cuda(int m, int n, int k,
     kernelFunc<<<grid, block>>>(m,n,k,ad, bd, cd, lda, ldb, ldc);
 
     cudaMemcpy(C, cd, m * n * sizeof(double), cudaMemcpyDeviceToHost);
-	int i;
-	for (i=0;i<m*n;i++){
-		printf("After %f \n",C[i]);
-	}
     
     cudaFree(ad);
     cudaFree(bd);
