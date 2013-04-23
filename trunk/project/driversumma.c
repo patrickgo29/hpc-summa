@@ -25,6 +25,10 @@
 #include "mm1d.h" // 1D algorithm
 #include "summa.h" // SUMMA algorithm
 
+#define SEQ 0
+#define OMP 1
+#define CUDA 2
+
 /* ------------------------------------------------------------ */
 
 /** Prints help message */
@@ -166,7 +170,7 @@ verify__ (int m, int n, int k, int P_row, int P_col, int s)
 
   /* Do multiply */
   if (rank == 0) mpih_debugmsg (comm2d, "Computing C <- C + A*B...\n");
-  summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d, NULL, NULL);
+  summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d, NULL, NULL, CUDA);
 
   /* Compare the two answers (in parallel) */
   if (rank == 0) mpih_debugmsg (comm2d, "Verifying...\n");
