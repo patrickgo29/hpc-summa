@@ -320,7 +320,7 @@ benchmark__ (int m, int n, int k, int P_row, int P_col, int s)
     summa_setZero (m, n, C_local, comm2d);
     double t_start = MPI_Wtime ();
     summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d,
-		&t[COMP], &t[COMM]);
+		&t[COMP], &t[COMM],CUDA);
     t[TOTAL] += MPI_Wtime () - t_start;
   }
 
