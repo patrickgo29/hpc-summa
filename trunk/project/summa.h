@@ -46,7 +46,7 @@ double* summa_distribute (int m, int n, const double* A,
 void summa_mult (int m, int n, int k, int s_max,
 		 const double* A_local, const double* B_local,
 		 double* C_local, MPI_Comm comm2d,
-		 double* p_t_comp, double* p_t_comm);
+		 double* p_t_comp, double* p_t_comm, int type);
 
 /**
  * \brief Allocates a M x N matrix across all processes in comm using
