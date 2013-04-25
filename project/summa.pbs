@@ -13,6 +13,10 @@ echo $PWD
 cat $PBS_NODEFILE
 echo -e "\n\n"
 
-mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 10 10 10 2 2 4
+OUT=benchmarking.txt
+rm -f ${OUT}
+touch ${OUT}
+
+mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 4 4 4 4 2 1 | tee -a ${OUT}
 
 # eof
