@@ -96,13 +96,13 @@ main (int argc, char** argv)
     mpih_debugmsg (MPI_COMM_WORLD, "SUMMA strip width: %d\n", strip_width);
 	}
 	
-	if (rank == 0) mpih_debugmsg (comm2d, "Using sequential algorithm\n");
+	if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using sequential algorithm\n");
   verify__ (M, N, K, Pr, Pc, strip_width,SEQ);
   benchmark__ (M, N, K, Pr, Pc, strip_width,SEQ);
-	if (rank == 0) mpih_debugmsg (comm2d, "Using OpenMP\n");
+	if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using OpenMP\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,OMP);
 	benchmark__ (M, N, K, Pr, Pc, strip_width,OMP);
-	if (rank == 0) mpih_debugmsg (comm2d, "Using CUDA\n");
+	if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using CUDA\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,CUDA);
 	benchmark__ (M, N, K, Pr, Pc, strip_width,CUDA);
 
