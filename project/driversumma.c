@@ -94,12 +94,15 @@ main (int argc, char** argv)
     mpih_debugmsg (MPI_COMM_WORLD, "Matrix dimensions: M=%d, N=%d, K=%d\n", M, N, K);
     mpih_debugmsg (MPI_COMM_WORLD, "Process grid: %d x %d\n", Pr, Pc);
     mpih_debugmsg (MPI_COMM_WORLD, "SUMMA strip width: %d\n", strip_width);
-  }
-
+	}
+	
+	if (rank == 0) mpih_debugmsg (comm2d, "Using sequential algorithm\n");
   verify__ (M, N, K, Pr, Pc, strip_width,SEQ);
   benchmark__ (M, N, K, Pr, Pc, strip_width,SEQ);
+	if (rank == 0) mpih_debugmsg (comm2d, "Using OpenMP\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,OMP);
 	benchmark__ (M, N, K, Pr, Pc, strip_width,OMP);
+	if (rank == 0) mpih_debugmsg (comm2d, "Using CUDA\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,CUDA);
 	benchmark__ (M, N, K, Pr, Pc, strip_width,CUDA);
 
@@ -173,22 +176,7 @@ verify__ (int m, int n, int k, int P_row, int P_col, int s, int type)
   summa_setZero (m, n, C_local, comm2d);
 
   /* Do multiply */
-  if (rank == 0) {
-		mpih_debugmsg (comm2d, "Computing C <- C + A*B...\n");
-		switch(type) {
-			case SEQ:
-				mpih_debugmsg (comm2d, "Using sequential algorithm\n");
-				break;
-			case OMP:
-				mpih_debugmsg (comm2d, "Using OpenMP\n");
-				break;
-			case CUDA:
-				mpih_debugmsg (comm2d, "Using CUDA\n");
-				break;
-			default:
-				break;
-		}
-	}
+  if (rank == 0) mpih_debugmsg (comm2d, "Computing C <- C + A*B...\n");
   summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d, NULL, NULL, type);
 
   /* Compare the two answers (in parallel) */
@@ -318,19 +306,6 @@ benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type)
 
   if (rank == 0) {
 		mpih_debugmsg (comm2d, "Beginning benchmark...\n");
-		switch(type) {
-			case SEQ:
-				mpih_debugmsg (comm2d, "Using sequential algorithm\n");
-				break;
-			case OMP:
-				mpih_debugmsg (comm2d, "Using OpenMP\n");
-				break;
-			case CUDA:
-				mpih_debugmsg (comm2d, "Using CUDA\n");
-				break;
-			default:
-				break;
-		}
 	}
 
   /* Create a synthetic problem to benchmark. */
