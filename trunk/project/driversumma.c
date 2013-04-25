@@ -35,7 +35,7 @@
 static void usage__ (const char* progname);
 
 /** \brief Checks the distributed matrix multiply routine */
-static void verify__ (int m, int n, int k, int P_row, int P_col, int s);
+static void verify__ (int m, int n, int k, int P_row, int P_col, int s, int type);
 
 /**
  *  \brief Print aggregate execution time statistics for each of the
@@ -49,7 +49,7 @@ static void summarize__ (int m, int n, int k, int s,
 			 MPI_Comm comm, int debug);
 
 /** \brief Checks the distributed matrix multiply routine */
-static void benchmark__ (int m, int n, int k, int P_row, int P_col, int s);
+static void benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type);
 
 /* ------------------------------------------------------------ */
 
@@ -69,7 +69,7 @@ main (int argc, char** argv)
   int Pr, Pc; /* process grid */
   int strip_width; /* strip width */
   if (rank == 0) { /* p0 parses the command-line arguments */
-    if (argc != 7) {
+    if (argc != 8) {
       usage__ (argv[0]);
       MPI_Abort (MPI_COMM_WORLD, 1);
     }
@@ -79,7 +79,7 @@ main (int argc, char** argv)
     Pr = atoi (argv[4]); mpih_assert (Pr > 0);
     Pc = atoi (argv[5]); mpih_assert (Pc > 0);
     strip_width = atoi (argv[6]); mpih_assert (strip_width > 0);
-    mpih_assert ((Pr * Pc) == P);
+    mpih_assert ((Pr * Pc) == P);  
   }
 
   /* p0 then distributes the program arguments */
@@ -96,8 +96,12 @@ main (int argc, char** argv)
     mpih_debugmsg (MPI_COMM_WORLD, "SUMMA strip width: %d\n", strip_width);
   }
 
-  verify__ (M, N, K, Pr, Pc, strip_width);
-  benchmark__ (M, N, K, Pr, Pc, strip_width);
+  verify__ (M, N, K, Pr, Pc, strip_width,SEQ);
+  benchmark__ (M, N, K, Pr, Pc, strip_width,SEQ);
+	verify__ (M, N, K, Pr, Pc, strip_width,OMP);
+	benchmark__ (M, N, K, Pr, Pc, strip_width,OMP);
+	verify__ (M, N, K, Pr, Pc, strip_width,CUDA);
+	benchmark__ (M, N, K, Pr, Pc, strip_width,CUDA);
 
   MPI_Finalize ();
   return 0;
@@ -133,7 +137,7 @@ static int checkEnvEnabled__ (const char* var, int def_val);
 
 static
 void
-verify__ (int m, int n, int k, int P_row, int P_col, int s)
+verify__ (int m, int n, int k, int P_row, int P_col, int s, int type)
 {
   if (!checkEnvEnabled__ ("VERIFY", 1)) return;
 
@@ -169,8 +173,23 @@ verify__ (int m, int n, int k, int P_row, int P_col, int s)
   summa_setZero (m, n, C_local, comm2d);
 
   /* Do multiply */
-  if (rank == 0) mpih_debugmsg (comm2d, "Computing C <- C + A*B...\n");
-  summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d, NULL, NULL, CUDA);
+  if (rank == 0) {
+		mpih_debugmsg (comm2d, "Computing C <- C + A*B...\n");
+		switch(type) {
+			case SEQ:
+				mpih_debugmsg (comm2d, "Using sequential algorithm\n");
+				break;
+			case OMP:
+				mpih_debugmsg (comm2d, "Using OpenMP\n");
+				break;
+			case CUDA:
+				mpih_debugmsg (comm2d, "Using CUDA\n");
+				break;
+			default:
+				break;
+		}
+	}
+  summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d, NULL, NULL, type);
 
   /* Compare the two answers (in parallel) */
   if (rank == 0) mpih_debugmsg (comm2d, "Verifying...\n");
@@ -290,14 +309,29 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
 
 /* ------------------------------------------------------------ */
 void
-benchmark__ (int m, int n, int k, int P_row, int P_col, int s)
+benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type)
 {
   if (!checkEnvEnabled__ ("BENCH", 1)) return;
 
   MPI_Comm comm2d = summa_createTopology (MPI_COMM_WORLD, P_row, P_col);
   int rank = mpih_getRank (comm2d);
 
-  if (rank == 0) mpih_debugmsg (comm2d, "Beginning benchmark...\n");
+  if (rank == 0) {
+		mpih_debugmsg (comm2d, "Beginning benchmark...\n");
+		switch(type) {
+			case SEQ:
+				mpih_debugmsg (comm2d, "Using sequential algorithm\n");
+				break;
+			case OMP:
+				mpih_debugmsg (comm2d, "Using OpenMP\n");
+				break;
+			case CUDA:
+				mpih_debugmsg (comm2d, "Using CUDA\n");
+				break;
+			default:
+				break;
+		}
+	}
 
   /* Create a synthetic problem to benchmark. */
   double* A_local = summa_alloc (m, k, comm2d);
@@ -320,7 +354,7 @@ benchmark__ (int m, int n, int k, int P_row, int P_col, int s)
     summa_setZero (m, n, C_local, comm2d);
     double t_start = MPI_Wtime ();
     summa_mult (m, n, k, s, A_local, B_local, C_local, comm2d,
-		&t[COMP], &t[COMM],CUDA);
+		&t[COMP], &t[COMM],type);
     t[TOTAL] += MPI_Wtime () - t_start;
   }
 
