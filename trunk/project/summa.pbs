@@ -17,6 +17,6 @@ OUT=benchmarking.txt
 rm -f ${OUT}
 touch ${OUT}
 
-mpirun --hostfile $PBS_NODEFILE -np 8 ./summa 4 4 4 4 2 1 | tee -a ${OUT}
+mpirun --hostfile $PBS_NODEFILE -np 16 ./summa 10 10 10 4 4 4 | tee -a ${OUT}
 
 # eof
