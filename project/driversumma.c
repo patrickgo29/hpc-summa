@@ -69,7 +69,7 @@ main (int argc, char** argv)
   int Pr, Pc; /* process grid */
   int strip_width; /* strip width */
   if (rank == 0) { /* p0 parses the command-line arguments */
-    if (argc != 8) {
+    if (argc != 7) {
       usage__ (argv[0]);
       MPI_Abort (MPI_COMM_WORLD, 1);
     }
