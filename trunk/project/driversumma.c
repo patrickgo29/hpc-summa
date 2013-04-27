@@ -332,7 +332,9 @@ benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type)
 		&t[COMP], &t[COMM],type);
     t[TOTAL] += MPI_Wtime () - t_start;
   }
-
+	t[TOTAL] = t[TOTAL]/MAX_TRIALS;
+	t[COMP] = t[COMP]/MAX_TRIALS;
+	t[COMM] = t[COMM]/MAX_TRIALS;
   if (rank == 0) mpih_debugmsg (comm2d, "Done!\n");
   summarize__ (m, n, k, s, t, 3, comm2d, 0);
 

@@ -284,8 +284,8 @@ summa_mult (int m, int n, int k, int s_max,
 	MPI_Comm_free (&comm_col);
 	free (A_strip);
 	free (B_strip);
-	if (p_t_comp) *p_t_comp = t_comp;
-	if (p_t_comm) *p_t_comm = t_comm;
+	if (p_t_comp) *p_t_comp = *p_t_comp + t_comp;
+	if (p_t_comm) *p_t_comm = *p_t_comm + t_comm;
 }
 
 /* ------------------------------------------------------------ */
