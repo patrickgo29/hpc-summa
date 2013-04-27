@@ -74,7 +74,7 @@ mat_multiply_omp (int m, int n, int k,
 		#pragma omp parallel for private(jj)
 		for (jj = 0; jj < n; ++jj) {
 			cij = C[ii + jj*ldc];
-			#pragma omp parallel for private(kk) reduction(+:cij)
+			#pragma omp parallel for private(kk)
 			for (kk = 0; kk < k; ++kk) {
 				tij = A[ii + kk*lda] * B[kk + jj*ldb];
 				cij += tij;
