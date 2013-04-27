@@ -69,7 +69,7 @@ mat_multiply_omp (int m, int n, int k,
 	assert (C || m <= 0 || n <= 0); assert (ldc >= m);
 	int ii,jj,kk;
 	double cij,tij;
-	#pragma omp parallel for private(ii,jj,kk,cij,tij)
+	#pragma omp parallel for collapse(3) private(ii,jj,kk,tij,) shared(A,B,C) reduction(+:cij)
 	for (ii = 0; ii < m; ++ii) {
 		for (jj = 0; jj < n; ++jj) {
 			cij = C[ii + jj*ldc];
