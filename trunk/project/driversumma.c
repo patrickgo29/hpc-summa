@@ -276,8 +276,12 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
   FILE* fp = debug ? stderr : stdout;
   int P = mpih_getSize (comm);
   int rank = mpih_getRank (comm);
-  if (rank == 0)
-    fprintf (fp, "%s%d %d %d %d %d", debug ? "DEBUG: " : "", m, n, k, s, P);
+  if (rank == 0) {
+		fprintf (fp, "%s%d %d %d %d %d", debug ? "DEBUG: " : "", m, n, k, s, P);
+		if (type==SEQ) fprintf(fp,"Using sequential algorithm: \n");
+		if (type==OMP) fprintf(fp,"Using OpenMP: \n");
+		if (type==CUDA) fprintf(fp,"Using Cuda: \n");
+	}
   for (int i = 0; i < n_t; ++i) {
     double* tt = (double *)t; /* remove cast */
     double ti_min;
@@ -288,9 +292,6 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
     MPI_Reduce (&tt[i], &ti_sum, 1, MPI_DOUBLE, MPI_SUM, 0, comm);
 
     if (rank == 0){
-			if (type==SEQ) fprintf(fp,"Using sequential algorithm: \n");
-			if (type==OMP) fprintf(fp,"Using OpenMP: \n");
-			if (type==CUDA) fprintf(fp,"Using Cuda: \n");
 			if (i==0) fprintf(fp,"Total time -> ");
 			if (i==1) fprintf(fp,"Computation time -> ");
 			if (i==2) fprintf(fp,"Communication time -> ");
