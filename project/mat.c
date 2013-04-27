@@ -69,14 +69,15 @@ mat_multiply_omp (int m, int n, int k,
 	assert (C || m <= 0 || n <= 0); assert (ldc >= m);
 	int ii,jj,kk;
 	double cij,tij;
-	#pragma omp parallel for private(ii) private(jj) private(kk)
+	#pragma omp parallel for private(ii,jj,kk,cij,tij)
 	for (ii = 0; ii < m; ++ii) {
 		for (jj = 0; jj < n; ++jj) {
 			cij = C[ii + jj*ldc];
 			for (kk = 0; kk < k; ++kk) {
 				tij = A[ii + kk*lda] * B[kk + jj*ldb];
 				cij += tij;
-				printf("Bouh" + omp_get_thread_num());
+				int num = omp_get_thread_num();
+				printf("Bouh %d",num);
 			}
 			C[ii + jj*ldc] = cij;
 		}
