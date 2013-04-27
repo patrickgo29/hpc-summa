@@ -46,7 +46,7 @@ static void verify__ (int m, int n, int k, int P_row, int P_col, int s, int type
  */
 static void summarize__ (int m, int n, int k, int s,
 			 const double* t, int n_t,
-			 MPI_Comm comm, int debug);
+			 MPI_Comm comm, int debug, int type);
 
 /** \brief Checks the distributed matrix multiply routine */
 static void benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type);
@@ -270,7 +270,7 @@ checkEnvEnabled__ (const char* var, int def_val)
 static
 void
 summarize__ (int m, int n, int k, int s, const double* t, int n_t,
-	     MPI_Comm comm, int debug)
+	     MPI_Comm comm, int debug, int type)
 {
   MPI_Barrier (comm);
   FILE* fp = debug ? stderr : stdout;
@@ -287,8 +287,16 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
     double ti_sum;
     MPI_Reduce (&tt[i], &ti_sum, 1, MPI_DOUBLE, MPI_SUM, 0, comm);
 
-    if (rank == 0)
-      fprintf (fp, " %g %g %g", ti_min, ti_max, ti_sum / P);
+    if (rank == 0){
+			if (type==SEQ) fprintf(fp,"Using sequential algorithm: \n");
+			if (type==OMP) fprintf(fp,"Using OpenMP: \n");
+			if (type==CUDA) fprintf(fp,"Using Cuda: \n");
+			if (i==0) fprintf(fp,"Total time -> ");
+			if (i==1) fprintf(fp,"Computation time -> ");
+			if (i==2) fprintf(fp,"Communication time -> ");
+			fprintf (fp, "Min time: %g Max time: %g Average time: %g\n", ti_min, ti_max, ti_sum / P);
+		}
+      
   }
   if (rank == 0)
     fprintf (fp, "\n");
@@ -336,7 +344,7 @@ benchmark__ (int m, int n, int k, int P_row, int P_col, int s, int type)
 	t[COMP] = t[COMP]/MAX_TRIALS;
 	t[COMM] = t[COMM]/MAX_TRIALS;
   if (rank == 0) mpih_debugmsg (comm2d, "Done!\n");
-  summarize__ (m, n, k, s, t, 3, comm2d, 0);
+  summarize__ (m, n, k, s, t, 3, comm2d, 0,type);
 
   summa_free (A_local, comm2d);
   summa_free (B_local, comm2d);
