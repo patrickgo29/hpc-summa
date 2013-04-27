@@ -278,9 +278,9 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
   int rank = mpih_getRank (comm);
   if (rank == 0) {
 		fprintf (fp, "%s%d %d %d %d %d", debug ? "DEBUG: " : "", m, n, k, s, P);
-		if (type==SEQ) fprintf(fp,"Using sequential algorithm: \n");
-		if (type==OMP) fprintf(fp,"Using OpenMP: \n");
-		if (type==CUDA) fprintf(fp,"Using Cuda: \n");
+		if (type==SEQ) fprintf(fp," Using sequential algorithm: \n");
+		if (type==OMP) fprintf(fp," Using OpenMP: \n");
+		if (type==CUDA) fprintf(fp," Using Cuda: \n");
 	}
   for (int i = 0; i < n_t; ++i) {
     double* tt = (double *)t; /* remove cast */
@@ -292,10 +292,10 @@ summarize__ (int m, int n, int k, int s, const double* t, int n_t,
     MPI_Reduce (&tt[i], &ti_sum, 1, MPI_DOUBLE, MPI_SUM, 0, comm);
 
     if (rank == 0){
-			if (i==0) fprintf(fp,"Total time -> ");
-			if (i==1) fprintf(fp,"Computation time -> ");
-			if (i==2) fprintf(fp,"Communication time -> ");
-			fprintf (fp, "Min time: %g Max time: %g Average time: %g\n", ti_min, ti_max, ti_sum / P);
+			if (i==0) fprintf(fp,"Total time\n");
+			if (i==1) fprintf(fp,"Computation time\n");
+			if (i==2) fprintf(fp,"Communication time\n");
+			fprintf (fp, "\t Min time: %g Max time: %g Average time: %g\n", ti_min, ti_max, ti_sum / P);
 		}
       
   }
