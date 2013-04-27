@@ -69,7 +69,7 @@ mat_multiply_omp (int m, int n, int k,
 	assert (C || m <= 0 || n <= 0); assert (ldc >= m);
 	int ii,jj,kk;
 	double cij,tij;
-	#pragma omp parallel for private(ii) private(jj) private(kk)
+	#pragma omp parallel for private(ii) 
 	for (ii = 0; ii < m; ++ii) {
 		#pragma omp parallel for private(jj)
 		for (jj = 0; jj < n; ++jj) {
