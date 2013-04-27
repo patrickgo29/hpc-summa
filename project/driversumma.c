@@ -102,9 +102,9 @@ main (int argc, char** argv)
 	if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using OpenMP\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,OMP);
 	benchmark__ (M, N, K, Pr, Pc, strip_width,OMP);
-	/*if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using CUDA\n");
+	if (rank == 0) mpih_debugmsg (MPI_COMM_WORLD, "Using CUDA\n");
 	verify__ (M, N, K, Pr, Pc, strip_width,CUDA);
-	benchmark__ (M, N, K, Pr, Pc, strip_width,CUDA);*/
+	benchmark__ (M, N, K, Pr, Pc, strip_width,CUDA);
 
   MPI_Finalize ();
   return 0;
